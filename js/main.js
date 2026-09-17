@@ -2,6 +2,57 @@
 (function(){
   "use strict";
 
+  /* ============================================================
+     LEAD FORM CONFIG — the ONE place the Web3Forms access key
+     lives. Every lead form on the site (quote modal, contact page,
+     homepage consultation form) reads this constant rather than
+     the placeholder value sitting in each form's hidden input, so
+     swapping in the real production key here is enough to wire up
+     every form at once.
+     ============================================================ */
+  var WEB3FORMS_ACCESS_KEY = "3a52c6fe-2954-4995-8b3d-f5bcec61491f";
+  var WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+
+  /* ============================================================
+     REVIEWS — read from the centralized window.YB_REVIEWS_ALL
+     (js/reviews-data.js, loaded before this file). Selects the
+     most relevant real reviews per page by tag overlap so no
+     testimonial is ever hardcoded into a page's markup.
+     ============================================================ */
+  var YB_ALL_REVIEWS = window.YB_REVIEWS_ALL || [];
+
+  function pickReviews(tags, count, pool){
+    pool = pool || YB_ALL_REVIEWS;
+    var scored = pool.map(function(r){
+      var score = 0;
+      (r.tags||[]).forEach(function(t){ if(tags.indexOf(t)>-1) score++; });
+      return {r:r, score:score};
+    }).filter(function(x){ return x.score>0; });
+    scored.sort(function(a,b){ return b.score-a.score; });
+    return scored.slice(0,count).map(function(x){ return x.r; });
+  }
+
+  /* homepage carousel data: curated "featured" set, unless the
+     page already defines window.YB_REVIEWS explicitly */
+  if(!window.YB_REVIEWS){
+    window.YB_REVIEWS = YB_ALL_REVIEWS.filter(function(r){ return r.featured; })
+      .map(function(r){ return {name:r.name, initials:r.initials, quote:r.quote}; });
+  }
+
+  /* [data-review-mount data-tags="a,b,c" data-count="3"] — simple
+     plain-text review rows (no card UI), used on service subpages */
+  document.querySelectorAll("[data-review-mount]").forEach(function(mount){
+    var tags = (mount.getAttribute("data-tags")||"").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+    var count = parseInt(mount.getAttribute("data-count"),10) || 3;
+    var picks = pickReviews(tags, count);
+    mount.innerHTML = picks.map(function(r){
+      return '<div class="value-item" style="border-bottom:none">'+
+        '<p class="editorial" style="max-width:none">&ldquo;'+r.quote+'&rdquo;</p>'+
+        '<p style="margin-top:14px;font-weight:700;font-size:14px">&mdash; '+r.name+', Google Review</p>'+
+      '</div>';
+    }).join("");
+  });
+
   /* --- analytics helpers (safe no-ops if GA/Clarity aren't loaded) --- */
   function track(name,params){
     if(typeof window.gtag==="function"){ window.gtag("event",name,params||{}); }
@@ -25,7 +76,7 @@
     document.body.insertBefore(skip,document.body.firstChild);
   }
   if(!document.getElementById("main")){
-    var landmark=document.querySelector("header.hero,header.contact-hero,header.page-hero,.hero-split");
+    var landmark=document.querySelector("header.page-hero");
     if(landmark) landmark.id="main";
   }
 
@@ -303,17 +354,47 @@
     });
   });
 
+  /* --- deep FAQ accordion (homepage oxblood section) --- */
+  document.querySelectorAll(".faq-deep-q").forEach(function(q){
+    q.addEventListener("click",function(){
+      var item=q.closest(".faq-deep-item");
+      var isOpen=item.classList.contains("open");
+      document.querySelectorAll(".faq-deep-item").forEach(function(i){
+        i.classList.remove("open");
+        var btn=i.querySelector(".faq-deep-q");
+        if(btn) btn.setAttribute("aria-expanded","false");
+      });
+      if(!isOpen){
+        item.classList.add("open");
+        q.setAttribute("aria-expanded","true");
+      }
+    });
+    q.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); q.click(); }
+    });
+  });
+
+  /* --- seasonal priority config ---
+     Drives the JS-controlled seasonal pieces (popup content + which
+     quote-modal service is offered first/highlighted). This is a
+     static site with no templating, so hero/section copy for next
+     season still needs a manual HTML edit at the <!-- SEASONAL -->
+     comment anchors in each page — this object does not (and can't)
+     rewrite markup on its own. */
+  var YB_SEASON={ primary:"sprinkler-blowout", secondary:"tree-trimming" };
+
   /* ============================================================
      QUOTE MODAL  (5-step wizard, shared by every "Get a Free
      Estimate" CTA sitewide)
      ============================================================ */
   var QM_SERVICES=[
-    {id:"tree",label:"Tree Service"},
-    {id:"retaining-wall",label:"Retaining Wall"},
-    {id:"landscaping",label:"Landscaping"},
+    {id:"sprinkler-blowout",label:"Sprinkler Blowout"},
+    {id:"tree-trimming",label:"Tree Trimming"},
+    {id:"tree-removal",label:"Tree Removal"},
     {id:"irrigation",label:"Irrigation"},
+    {id:"landscaping",label:"Landscaping"},
+    {id:"retaining-wall",label:"Retaining Wall"},
     {id:"hardscaping",label:"Hardscaping"},
-    {id:"snow-seasonal",label:"Snow / Seasonal"},
     {id:"not-sure",label:"Not Sure Yet"}
   ];
   var QM_TIMELINES=[
@@ -337,6 +418,7 @@
     var lastFocus=null;
     var step=1;
     var submitted=false;
+    var submitError="";
     var data={zip:"",service:"",timeline:"",details:"",photoName:"",firstName:"",lastName:"",phone:"",email:""};
     var errors={};
 
@@ -409,6 +491,7 @@
             fieldRow("Phone*","phone","tel",{placeholder:"(509) 000-0000",autocomplete:"tel"})+
             fieldRow("Email*","email","email",{autocomplete:"email"})+
           '</div>';
+          if(submitError) html+='<div class="qm-submit-error" role="alert">'+submitError+'</div>';
         }
       }
       bodyEl.innerHTML=html;
@@ -485,11 +568,15 @@
       submitQuote();
     }
 
+    var submitting=false;
     function submitQuote(){
+      if(submitting) return;
+      submitting=true;
+      submitError="";
       var next=document.getElementById("qmNext");
       if(next){ next.disabled=true; next.textContent="Sending..."; }
       var fd=new FormData();
-      fd.append("access_key","REPLACE_WITH_REAL_WEB3FORMS_ACCESS_KEY");
+      fd.append("access_key",WEB3FORMS_ACCESS_KEY);
       fd.append("subject","New estimate request from youngbuckslandscaping.com (quote modal)");
       fd.append("from_name","Young Bucks Website");
       fd.append("zip_code",data.zip);
@@ -500,22 +587,24 @@
       fd.append("last_name",data.lastName);
       fd.append("phone",data.phone);
       fd.append("email",data.email);
-      fetch("https://api.web3forms.com/submit",{method:"POST",headers:{Accept:"application/json"},body:fd})
+      fetch(WEB3FORMS_ENDPOINT,{method:"POST",headers:{Accept:"application/json"},body:fd})
         .then(function(r){ return r.json(); })
         .then(function(res){
-          if(res.success){
+          submitting=false;
+          if(res && res.success){
             submitted=true;
             track("generate_lead",{page_path:location.pathname,service:data.service});
             trackClarity("quote_submit");
             renderStep();
           } else {
-            if(next){ next.disabled=false; next.textContent="Request My Estimate"; }
-            alert("Something went wrong sending your request. Please call us at (509) 470-5684.");
+            submitError="Something went wrong sending your request. Please call us at (509) 470-5684.";
+            renderStep();
           }
         })
         .catch(function(){
-          if(next){ next.disabled=false; next.textContent="Request My Estimate"; }
-          alert("Unable to send. Please call us at (509) 470-5684.");
+          submitting=false;
+          submitError="Unable to send. Please check your connection and try again, or call us at (509) 470-5684.";
+          renderStep();
         });
     }
 
@@ -537,8 +626,8 @@
     window.__qmIsOpen=false;
     function openModal(presetService){
       lastFocus=document.activeElement;
-      step=1; submitted=false;
-      errors={};
+      step=1; submitted=false; submitting=false;
+      errors={}; submitError="";
       data={zip:"",service:presetService||"",timeline:"",details:"",photoName:"",firstName:"",lastName:"",phone:"",email:""};
       backdrop.classList.add("open");
       backdrop.setAttribute("aria-hidden","false");
@@ -593,8 +682,7 @@
     if(!backdrop||promoDismissed()) return;
     var closeBtn=document.getElementById("promoClose");
     var dismissBtn=document.getElementById("promoDismiss");
-    var form=document.getElementById("promoForm");
-    var errEl=document.getElementById("promoErr");
+    var scheduleBtn=document.getElementById("promoSchedule");
     var shown=false;
 
     function show(){
@@ -629,37 +717,10 @@
     document.addEventListener("keydown",function(e){
       if(e.key==="Escape"&&backdrop.classList.contains("open")) dismiss();
     });
-
-    if(form){
-      form.addEventListener("submit",function(e){
-        e.preventDefault();
-        var emailInput=document.getElementById("promoEmail");
-        var email=(emailInput.value||"").trim();
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-          errEl.textContent="Enter a valid email address.";
-          errEl.style.display="block";
-          return;
-        }
-        errEl.style.display="none";
-        var fd=new FormData();
-        fd.append("access_key","REPLACE_WITH_REAL_WEB3FORMS_ACCESS_KEY");
-        fd.append("subject","New newsletter signup from youngbuckslandscaping.com popup");
-        fd.append("from_name","Young Bucks Website Popup");
-        fd.append("email",email);
-        var btn=form.querySelector("[type=submit]");
-        if(btn){ btn.disabled=true; btn.textContent="Sending..."; }
-        fetch("https://api.web3forms.com/submit",{method:"POST",headers:{Accept:"application/json"},body:fd})
-          .then(function(r){ return r.json(); })
-          .then(function(res){
-            var successEl=document.getElementById("promoSuccess");
-            if(res.success&&successEl){
-              form.hidden=true;
-              successEl.hidden=false;
-              setPromoDismissed();
-              track("generate_lead",{page_path:location.pathname,source:"promo_popup"});
-            } else if(btn){ btn.disabled=false; btn.textContent="Send Me The Updates"; }
-          })
-          .catch(function(){ if(btn){ btn.disabled=false; btn.textContent="Send Me The Updates"; } });
+    if(scheduleBtn){
+      scheduleBtn.addEventListener("click",function(){
+        dismiss();
+        if(window.YB_openQuoteModal) window.YB_openQuoteModal(YB_SEASON.primary);
       });
     }
   })();
@@ -691,10 +752,20 @@
     });
   })();
 
-  /* --- Web3Forms AJAX submit (contact page inline form) --- */
+  /* --- Web3Forms AJAX submit (contact page + homepage consultation form) --- */
   var contactForms=document.querySelectorAll(".w3f-form");
   contactForms.forEach(function(form){
     var started=false;
+    var submittingForm=false;
+    var btn=form.querySelector("[type=submit]");
+    var btnDefaultLabel=btn?btn.innerHTML:"";
+    var success=form.nextElementSibling;
+    var errEl=document.createElement("div");
+    errEl.className="field-submit-error";
+    errEl.setAttribute("role","alert");
+    errEl.hidden=true;
+    form.appendChild(errEl);
+
     form.addEventListener("focusin",function(){
       if(started) return;
       started=true;
@@ -704,29 +775,36 @@
 
     form.addEventListener("submit",function(e){
       e.preventDefault();
-      var btn=form.querySelector("[type=submit]");
-      var success=form.nextElementSibling;
+      if(submittingForm) return;
+      submittingForm=true;
+      errEl.hidden=true;
       if(btn){ btn.disabled=true; btn.textContent="Sending..."; }
-      fetch("https://api.web3forms.com/submit",{
+      var fd=new FormData(form);
+      fd.set("access_key",WEB3FORMS_ACCESS_KEY);
+      fetch(WEB3FORMS_ENDPOINT,{
         method:"POST",
         headers:{ "Accept":"application/json" },
-        body:new FormData(form)
+        body:fd
       })
       .then(function(r){ return r.json(); })
       .then(function(data){
-        if(data.success){
+        submittingForm=false;
+        if(data && data.success){
           form.style.display="none";
           if(success) success.hidden=false;
           track("generate_lead",{page_path:location.pathname});
           trackClarity("quote_submit");
         } else {
-          if(btn){ btn.disabled=false; btn.textContent="Send Request"; }
-          alert("Something went wrong sending your request. Please call us at (509) 470-5684.");
+          if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
+          errEl.textContent="Something went wrong sending your request. Please call us at (509) 470-5684.";
+          errEl.hidden=false;
         }
       })
       .catch(function(){
-        if(btn){ btn.disabled=false; btn.textContent="Send Request"; }
-        alert("Unable to send. Please call us at (509) 470-5684.");
+        submittingForm=false;
+        if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
+        errEl.textContent="Unable to send. Please check your connection and try again, or call us at (509) 470-5684.";
+        errEl.hidden=false;
       });
     });
   });
@@ -736,11 +814,11 @@
     if(el.closest(".mobile-cta-bar")) return "mobile_bar";
     if(el.closest(".fab")) return "floating_button";
     if(el.closest(".nav")) return "header";
-    if(el.closest(".hero-split,.hero,.contact-hero,.page-hero")) return "hero";
+    if(el.closest(".page-hero")) return "hero";
     if(el.closest(".footer")) return "footer";
     if(el.closest(".drawer")) return "mobile_menu";
-    if(el.closest(".form-card,.contact-info-block")) return "contact_page";
-    if(el.closest(".final-cta,.util-bar")) return "cta_section";
+    if(el.closest(".form-card,.contact-info-block,.media-form")) return "contact_page";
+    if(el.closest(".cta,.faq-deep,.dark-feature,.util-bar")) return "cta_section";
     return "body";
   }
   document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
@@ -754,13 +832,6 @@
       track("email_click",{page_path:location.pathname,placement:placementFor(a)});
     });
   });
-  document.querySelectorAll(".svc-more").forEach(function(a){
-    a.addEventListener("click",function(){
-      var title=a.closest(".svc")?a.closest(".svc").querySelector(".svc-title"):null;
-      track("service_cta_click",{page_path:location.pathname,service:title?title.textContent:undefined});
-    });
-  });
-
   /* --- mobile conversion bar (injected once, all pages) --- */
   if(!document.querySelector(".mobile-cta-bar")){
     var bar=document.createElement("div");

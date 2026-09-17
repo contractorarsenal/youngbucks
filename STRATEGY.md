@@ -120,7 +120,7 @@ youngbuckslandscaping.com/
 
 ### Primary CTAs (every page):
 - **"Get Free Estimate"**: links to contact.html
-- **"Call (509) 555-0100"**: `tel:` link
+- **"Call (509) 470-5684"**: `tel:` link
 
 ### Placement Strategy:
 - **Hero section:** Both CTAs side by side (primary + phone)
