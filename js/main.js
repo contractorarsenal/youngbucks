@@ -479,7 +479,7 @@
         if(submitted){
           html+='<div class="qm-success"><div class="qm-success-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>'+
             '<h3>Request Received.</h3>'+
-            '<p>Thanks, '+(data.firstName||"there")+'. Young Bucks received your project request and will follow up within one business day. For an active tree emergency, call <a href="tel:+15094705684" style="color:var(--red);font-weight:700">(509) 470-5684</a>.</p>'+
+            '<p>Thanks, '+(data.firstName||"there")+'. Young Bucks received your project request and will follow up within one business day. For an active tree emergency, <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red);font-weight:700">Call Now</a>.</p>'+
             '<button type="button" class="btn btn-ink" id="qmDone">Close</button></div>';
         } else {
           html+='<h3>Tell Us How To Reach You</h3><span class="qm-sub">We\'ll follow up to confirm your estimate.</span>';
@@ -597,13 +597,13 @@
             trackClarity("quote_submit");
             renderStep();
           } else {
-            submitError="Something went wrong sending your request. Please call us at (509) 470-5684.";
+            submitError='We couldn\'t send your request. Please try again or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
             renderStep();
           }
         })
         .catch(function(){
           submitting=false;
-          submitError="Unable to send. Please check your connection and try again, or call us at (509) 470-5684.";
+          submitError='Unable to send. Please check your connection and try again, or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
           renderStep();
         });
     }
@@ -796,14 +796,14 @@
           trackClarity("quote_submit");
         } else {
           if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
-          errEl.textContent="Something went wrong sending your request. Please call us at (509) 470-5684.";
+          errEl.innerHTML='We couldn\'t send your request. Please try again or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
           errEl.hidden=false;
         }
       })
       .catch(function(){
         submittingForm=false;
         if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
-        errEl.textContent="Unable to send. Please check your connection and try again, or call us at (509) 470-5684.";
+        errEl.innerHTML='Unable to send. Please check your connection and try again, or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
         errEl.hidden=false;
       });
     });
@@ -837,7 +837,7 @@
     var bar=document.createElement("div");
     bar.className="mobile-cta-bar";
     bar.innerHTML=
-      '<a href="tel:+15094705684" class="mcb-call">Call Now</a>'+
+      '<a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" class="mcb-call">Call Now</a>'+
       '<button type="button" class="mcb-quote" data-open-quote data-placement="mobile_bar">Get Free Estimate</button>';
     document.body.appendChild(bar);
     bar.querySelectorAll('a[href^="tel:"]').forEach(function(a){

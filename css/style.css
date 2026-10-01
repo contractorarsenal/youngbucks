@@ -56,8 +56,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* ---------- layout helpers ---------- */
 .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
 .wrap-narrow{max-width:var(--maxw-narrow);margin:0 auto;padding-inline:var(--pad)}
-.section{padding-block:clamp(56px,9vw,96px)}
-.section-lg{padding-block:clamp(64px,11vw,112px)}
+.section{padding-block:clamp(64px,9vw,104px)}
+.section-lg{padding-block:clamp(72px,10vw,120px)}
 .eyebrow{
   font-size:clamp(11px,1.1vw,13px);
   font-weight:700;letter-spacing:.2em;text-transform:uppercase;
@@ -76,7 +76,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 .h3{font-family:var(--font);font-size:clamp(1.2rem,1.8vw,1.5rem);font-weight:700;letter-spacing:-.01em}
 .lead{font-size:clamp(1rem,1.4vw,1.2rem);color:var(--muted);line-height:1.6;font-weight:400;max-width:42ch;text-wrap:pretty}
 .editorial{font-family:var(--font-serif);color:var(--muted);font-size:clamp(15px,1.25vw,17px);line-height:1.75;max-width:56ch}
-.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(32px,5vw,56px)}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(36px,5.5vw,64px)}
 .section-head.center{flex-direction:column;align-items:center;text-align:center;margin-inline:auto}
 .section-head h2{margin-top:12px}
 
@@ -186,6 +186,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 .drawer-foot{margin-top:32px;display:flex;flex-direction:column;gap:14px}
 .drawer-foot .btn{width:100%}
 .drawer-foot .meta{color:var(--muted);font-size:13px;letter-spacing:.02em;line-height:1.7}
+.drawer-foot .meta a{color:var(--ink);font-weight:700}
 
 /* ============================================================
    PAGE HERO  (canonical full-bleed cinematic hero, every page)
@@ -217,9 +218,9 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    INTRO BAND  (centered white intro)
    ============================================================ */
-.intro-band{background:#fff;text-align:center;padding-block:clamp(56px,9vw,96px) clamp(40px,6vw,64px)}
+.intro-band{background:#fff;text-align:center;padding-block:clamp(64px,9vw,104px) clamp(44px,6vw,68px)}
 .intro-band .wrap-narrow{max-width:760px}
-.intro-band h2{margin-top:14px}
+.intro-band h2{margin-top:18px}
 .intro-band p{margin-top:20px;font-family:var(--font-serif);color:var(--muted);font-size:clamp(15px,1.3vw,18px);line-height:1.7}
 
 /* ============================================================
@@ -236,10 +237,11 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    TRUST + MEDIA  (2-col)
    ============================================================ */
-.trust-video{background:var(--warm-gray)}
+.trust-video{background:var(--warm-gray);padding-block:clamp(72px,9vw,116px)}
 .trust-video-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(36px,5vw,72px);align-items:center}
 .trust-video-body img.brandmark{height:40px;width:auto;margin-bottom:22px}
-.trust-video-body h2{margin-bottom:18px}
+.trust-video-body .eyebrow{margin-bottom:4px}
+.trust-video-body h2{margin-top:18px;margin-bottom:18px}
 .trust-video-body p{font-family:var(--font-serif);color:var(--muted);font-size:clamp(15px,1.3vw,17px);line-height:1.75;margin-bottom:26px;max-width:48ch}
 .trust-video-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--ink)}
 .trust-video-media img{width:100%;height:100%;object-fit:cover}
@@ -247,7 +249,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    REVIEWS  (carousel + stat panel — no card grid)
    ============================================================ */
-.reviews-section{background:#fff}
+.reviews-section{background:#fff;padding-block:clamp(84px,10vw,132px)}
 .reviews-columns{display:grid;grid-template-columns:1.5fr 1fr;gap:0;border:1px solid var(--line)}
 .review-carousel{background:#fff;padding:clamp(32px,4.5vw,56px);position:relative;display:flex;flex-direction:column;justify-content:center;min-height:320px}
 .review-carousel .qmark{position:absolute;top:26px;left:clamp(24px,4vw,40px);font-size:80px;line-height:1;color:var(--warm-gray);font-weight:800;font-family:var(--font)}
@@ -279,8 +281,8 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    SERVICES INTRO BAND
    ============================================================ */
-.services-intro{background:var(--warm-gray);text-align:center;padding-block:clamp(48px,7vw,72px)}
-.services-intro h2{margin-top:14px}
+.services-intro{background:var(--warm-gray);text-align:center;padding-block:clamp(56px,7.5vw,80px)}
+.services-intro h2{margin-top:18px}
 .services-intro p{margin:16px auto 0;max-width:56ch;font-family:var(--font-serif);color:var(--muted);font-size:clamp(15px,1.2vw,17px);line-height:1.7}
 
 /* ============================================================
@@ -288,7 +290,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
    Large alternating image/text rows. Used for every service
    listing sitewide (homepage + every service subpage).
    ============================================================ */
-.svc-feature{display:grid;grid-template-columns:62fr 38fr;min-height:clamp(440px,52vw,620px)}
+.svc-feature{display:grid;grid-template-columns:62fr 38fr;min-height:clamp(400px,44vw,540px)}
 .svc-feature.reverse{grid-template-columns:38fr 62fr}
 .svc-feature.reverse .svc-feature-media{order:2}
 .svc-feature.reverse .svc-feature-body{order:1}
@@ -378,7 +380,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
    ============================================================ */
 .education{background:#fff;text-align:center}
 .education .wrap-narrow{max-width:760px}
-.education h2{margin-top:14px}
+.education h2{margin-top:18px}
 .education p{margin:20px 0 32px;font-family:var(--font-serif);color:var(--muted);font-size:clamp(15px,1.3vw,18px);line-height:1.75}
 
 /* ============================================================
@@ -476,7 +478,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    WHY / TRUST PILLARS  (dark, used on service pages)
    ============================================================ */
-.why{background:var(--ink);color:#fff;padding-block:clamp(56px,9vw,96px)}
+.why{background:var(--ink);color:#fff;padding-block:clamp(64px,9vw,104px)}
 .why-top{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:end;margin-bottom:clamp(46px,6vw,80px)}
 .why-top .eyebrow{color:var(--red)}
 .why-top h2{color:#fff;margin-top:18px}
@@ -513,7 +515,7 @@ h1,h2,h3{font-family:var(--font);font-weight:700;letter-spacing:-.015em;line-hei
 /* ============================================================
    CLOSING CTA BAND  (red, restrained)
    ============================================================ */
-.cta{background:var(--red);color:#fff;text-align:center;padding-block:clamp(56px,9vw,96px)}
+.cta{background:var(--red);color:#fff;text-align:center;padding-block:clamp(64px,9vw,104px)}
 .cta h2{color:#fff;max-width:18ch;margin:0 auto 14px}
 .cta p{font-family:var(--font-serif);color:rgba(255,255,255,.88);font-size:clamp(15px,1.4vw,19px);max-width:42ch;margin:0 auto 32px}
 .cta .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
@@ -736,7 +738,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   .trust-video-media{order:-1;aspect-ratio:16/9}
   .reviews-columns{grid-template-columns:1fr}
   .svc-feature,.svc-feature.reverse{grid-template-columns:1fr}
-  .svc-feature-media{order:-1!important;width:100%;aspect-ratio:16/10;min-height:280px}
+  .svc-feature-media{order:-1!important;width:100%;aspect-ratio:16/9;min-height:240px}
   .svc-feature-body{order:2!important}
   .faq-deep-grid{grid-template-columns:1fr}
   .faq-deep-wm{display:none}
