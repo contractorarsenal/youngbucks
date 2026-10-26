@@ -9,10 +9,10 @@ Project instructions for Claude Code. Facts here come from the repository files 
 - **Address:** 4182 Highway 97A, Bldg 3, Wenatchee, WA 98801
 - **Phone:** (509) 470-5684 (`tel:+15094705684`)
 - **Email:** info@youngbucksllc.com (see Known Issues: domain mismatch)
-- **Founded:** 2013 (per site copy and schema `foundingDate`)
-- **Service areas (schema and STRATEGY.md):** Wenatchee, East Wenatchee, Cashmere, Leavenworth, Rock Island, Malaga, Monitor
-- **Services:** tree removal and trimming, emergency tree service, stump grinding, paver patios and hardscapes, retaining walls, irrigation, sprinkler blowouts and winterization, landscaping, drainage (STRATEGY.md)
-- **Brand voice (STRATEGY.md §10):** direct, confident, blue-collar professional. Avoid vague superlatives, "passionate about," and exclamation points except for urgent content.
+- **Founded:** not verified. Earlier site copy said 2013; the claim was removed pending owner confirmation.
+- **Service areas (schema and internal marketing plan (not in this repository)):** Wenatchee, East Wenatchee, Cashmere, Leavenworth, Rock Island, Malaga, Monitor
+- **Services:** tree removal and trimming, emergency tree service, stump grinding, paver patios and hardscapes, retaining walls, irrigation, sprinkler blowouts and winterization, landscaping, drainage (internal marketing plan (not in this repository))
+- **Brand voice (internal marketing plan (not in this repository) §10):** direct, confident, blue-collar professional. Avoid vague superlatives, "passionate about," and exclamation points except for urgent content.
 
 ### Business claims requiring owner verification
 
@@ -21,7 +21,7 @@ Do not add, strengthen, or change these without client confirmation:
 - "Since 2013" / "12+ years"
 - "24/7 emergency tree service"
 - "Respond within one business day" (quote-modal success message)
-- Stats cited in STRATEGY.md (1,400+ jobs, 87+ reviews, 7 cities). The stats bar was not found in `index.html`.
+- Stats from the internal marketing plan (jobs, reviews) are unverified and are not published on the site.
 - Seasonal sprinkler promotion in the promo popup (`index.html`)
 
 ## 2. Architecture
@@ -37,7 +37,7 @@ Static site. No framework, no build step, no package.json, no dependencies to in
 | `hardscapes-pavers.html` | Paver patios, outdoor living, drainage |
 | `retaining-walls.html` | Retaining walls |
 | `irrigation.html` | Irrigation systems |
-| `sprinkler-winterization.html` | Sprinkler blowouts and winterization (not in STRATEGY.md sitemap) |
+| `sprinkler-winterization.html` | Sprinkler blowouts and winterization (not in internal marketing plan (not in this repository) sitemap) |
 | `contact.html` | Contact page with lead form |
 | `css/style.css` | All site styling (shared) |
 | `js/main.js` | All interactions (shared): quote modal, forms, nav, drawer, carousels, slider, promo, analytics helpers |
@@ -45,7 +45,7 @@ Static site. No framework, no build step, no package.json, no dependencies to in
 | `assets/` | Local images: `logo.png`, `photos.jpeg`, `project-retaining-wall.jpeg`, `young-bucks-father-son-founders.jpg`, `young-bucks-mascot.png` |
 | `sitemap.xml` | Lists all 9 pages |
 | `robots.txt` | Allows all; points to sitemap |
-| `STRATEGY.md` | SEO, local-SEO, and marketing plan (internal document) |
+| the internal marketing plan (kept outside this repository) | SEO, local-SEO, and marketing plan (internal document) |
 | `.gitignore` | Ignores `.DS_Store`, `node_modules/`, `*.log` |
 
 Every page loads `css/style.css` and `js/main.js`. On `index.html`, `js/reviews-data.js` loads before `js/main.js`; confirm the same order on any other page before relying on it.
@@ -68,8 +68,8 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 - **Quote modal (`submitQuote` in `js/main.js`, ~line 572):** multi-step modal opened from CTAs across the site. Fields: ZIP, service, timeline, details, first name, last name, phone, email. Sent as `FormData` via `fetch`.
   - Success (`res.success === true`): renders the thank-you step, fires GA4 `generate_lead` (with `page_path` and `service`) and Clarity `quote_submit`.
   - Failure or network error: shows an inline message with a "Call Now" link.
-- **Homepage and contact forms:** use a second handler in `js/main.js` (around line 783). Not reviewed in detail during onboarding. Review before changing.
-- **Known gap:** STRATEGY.md expects `/thank-you.html`. It does not exist, and the JS handles success inline.
+- **Homepage and contact forms:** use the page-form handler in `js/main.js`. Reviewed 2026-10-26 with mocked submissions (see section 10).
+- **Known gap:** internal marketing plan (not in this repository) expects `/thank-you.html`. It does not exist, and the JS handles success inline.
 
 ## 4. Analytics and Tracking
 
@@ -84,8 +84,8 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 - `index.html`: HomeAndConstructionBusiness JSON-LD with address, telephone, areaServed, and makesOffer.
 - Service pages: Service JSON-LD with the business as provider.
 - `sprinkler-winterization.html`: FAQPage JSON-LD block.
-- No AggregateRating is present. STRATEGY.md recommends adding it only with real values.
-- STRATEGY.md specifies `LandscapeService`; the actual markup uses `HomeAndConstructionBusiness`. Do not change schema types without review.
+- No AggregateRating is present. internal marketing plan (not in this repository) recommends adding it only with real values.
+- internal marketing plan (not in this repository) specifies `LandscapeService`; the actual markup uses `HomeAndConstructionBusiness`. Do not change schema types without review.
 - `sitemap.xml` lists 9 URLs on `https://www.youngbuckslandscapingllc.com/`. Keep the sitemap in sync when pages are added.
 
 ## 6. GitHub and Deployment
@@ -124,11 +124,11 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 2. **Email domain mismatch.** The site uses `info@youngbucksllc.com`, but the intended domain is `www.youngbuckslandscapingllc.com`. Confirm the mailbox and the intended address.
 3. **Unverified claims** (see section 1).
 4. **External image dependency.** About 20 images are hosted on GitHub user-attachments URLs, not in the repository.
-5. **STRATEGY.md references missing items:** `images/` folder (real folder is `assets/`), `/thank-you.html`, and an AggregateRating and LandscapeService schema that aren't implemented.
+5. **internal marketing plan (not in this repository) references missing items:** `images/` folder (real folder is `assets/`), `/thank-you.html`, and an AggregateRating and LandscapeService schema that aren't implemented.
 6. **Seasonal sprinkler promotion** on `index.html` needs review for current accuracy and wording.
-7. **Web3Forms key exposure.** The access key is in client-side JS in a public repository, and its value appeared in a tool output during onboarding. Recommend reviewing domain restrictions in the Web3Forms dashboard and considering rotation. Rotation requires updating the constant in `js/main.js`.
-8. **Internal documentation is public.** `STRATEGY.md` is in a public repository. Consider making the repository private or moving the file out.
-9. **Homepage and contact form handler** has not been reviewed in detail. (Reviewed 2026-10-26: submit, success, and error paths verified with a mocked fetch. See section 10.)
+7. **Web3Forms domain restrictions.** Review the allowed domains for the Web3Forms access key in the Web3Forms dashboard. The constant lives in `js/main.js`.
+8. **Internal documentation is public.** the internal marketing plan (kept outside this repository) is in a public repository. Consider making the repository private or moving the file out.
+9. **Homepage and contact form handler:** reviewed 2026-10-26 with mocked submissions (see section 10).
 
 ## 10. Permanent Form and Design Standards
 
