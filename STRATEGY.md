@@ -5,7 +5,7 @@
 ## 1. Complete Sitemap
 
 ```
-youngbuckslandscaping.com/
+www.youngbuckslandscapingllc.com/
 ├── index.html                   : Homepage
 ├── about.html                   : About / Our Story
 ├── services.html                : All Services (hub page)
@@ -347,7 +347,7 @@ The website is built to be photo-forward. These image placements exist in the cu
 
 ## 13. Technical SEO Checklist
 
-- [ ] Connect to real domain: `youngbuckslandscaping.com`
+- [ ] Connect to real domain: `www.youngbuckslandscapingllc.com`
 - [ ] Install SSL certificate (HTTPS)
 - [ ] Submit XML sitemap to Google Search Console
 - [ ] Set up Google Analytics 4

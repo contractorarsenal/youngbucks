@@ -86,7 +86,7 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 - `sprinkler-winterization.html`: FAQPage JSON-LD block.
 - No AggregateRating is present. STRATEGY.md recommends adding it only with real values.
 - STRATEGY.md specifies `LandscapeService`; the actual markup uses `HomeAndConstructionBusiness`. Do not change schema types without review.
-- `sitemap.xml` lists 9 URLs on `https://youngbuckslandscaping.com/`. Keep the sitemap in sync when pages are added.
+- `sitemap.xml` lists 9 URLs on `https://www.youngbuckslandscapingllc.com/`. Keep the sitemap in sync when pages are added.
 
 ## 6. GitHub and Deployment
 
@@ -94,8 +94,8 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 - **Production-connected branch:** `main`
 - **Hosting:** GitHub Pages, legacy build from `main` at root (`/`). The build is automatic on every push to `main`.
 - **Current published URL:** https://contractorarsenal.github.io/youngbucks/
-- **Intended custom domain:** https://youngbuckslandscaping.com. It does not currently resolve, and GitHub Pages has no custom domain configured.
-- **Do not claim** that a push updates youngbuckslandscaping.com.
+- **Confirmed production website (owner, 2026-10-26):** https://www.youngbuckslandscapingllc.com/. It is live today behind Cloudflare, and its homepage matched `main` at `dd9d3ce` apart from Cloudflare's email-obfuscation rewrites. Its origin is not verified: GitHub Pages has no custom domain configured, and Cloudflare settings are not accessible from this repo.
+- **Do not claim** that a push updates www.youngbuckslandscapingllc.com until the public URL has been fetched and checked after the push. A successful Git push is not proof of deployment.
 - **Git:** initialized locally by onboarding. `origin` points to the repository above. `main` tracks `origin/main`. Repo-local identity is set; global config is unchanged. `.DS_Store` is in `.git/info/exclude`.
 - **Other branches:** `production-finalization` is fully merged into `main` (historical).
 - **Workflow:** prefer feature branches for development. Every push to `main` publishes the site.
@@ -120,8 +120,8 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 
 ## 9. Known Issues (Outstanding, Not Auto-Fixed)
 
-1. **Custom domain does not resolve.** `youngbuckslandscaping.com` has no DNS A record and is not set in GitHub Pages.
-2. **Email domain mismatch.** The site uses `info@youngbucksllc.com`, but the intended domain is `youngbuckslandscaping.com`. Confirm the mailbox and the intended address.
+1. **Production origin unverified.** `www.youngbuckslandscapingllc.com` is live through Cloudflare, but how Cloudflare reaches the code (GitHub Pages or otherwise) is not confirmed from this repo. Verify before relying on a push to update the live site.
+2. **Email domain mismatch.** The site uses `info@youngbucksllc.com`, but the intended domain is `www.youngbuckslandscapingllc.com`. Confirm the mailbox and the intended address.
 3. **Unverified claims** (see section 1).
 4. **External image dependency.** About 20 images are hosted on GitHub user-attachments URLs, not in the repository.
 5. **STRATEGY.md references missing items:** `images/` folder (real folder is `assets/`), `/thank-you.html`, and an AggregateRating and LandscapeService schema that aren't implemented.
