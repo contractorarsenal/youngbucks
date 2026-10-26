@@ -406,6 +406,11 @@
   var QM_STEPS=[
     {label:"Location"},{label:"Project"},{label:"Timeline"},{label:"Details"},{label:"Contact"}
   ];
+  /* lead emails carry the readable label (e.g. "Tree Removal"), matching the page forms */
+  function qmLabel(list,id){
+    for(var i=0;i<list.length;i++){ if(list[i].id===id) return list[i].label; }
+    return id;
+  }
 
   (function initQuoteModal(){
     var backdrop=document.getElementById("qmBackdrop");
@@ -488,8 +493,9 @@
             fieldRow("Last Name*","lastName","text",{autocomplete:"family-name"})+
           '</div>';
           html+='<div class="qm-field-row">'+
-            fieldRow("Phone*","phone","tel",{placeholder:"(509) 000-0000",autocomplete:"tel"})+
-            fieldRow("Email*","email","email",{autocomplete:"email"})+
+            fieldRow("Phone","phone","tel",{placeholder:"(509) 000-0000",autocomplete:"tel"})+
+            fieldRow("Email","email","email",{autocomplete:"email"})+
+            '<p class="field-hint">Add a phone number or an email address so we can reach you. At least one is required.</p>'+
           '</div>';
           if(submitError) html+='<div class="qm-submit-error" role="alert">'+submitError+'</div>';
         }
@@ -539,8 +545,14 @@
       } else if(step===5){
         if(!(data.firstName||"").trim()) errors.firstName="First name is required.";
         if(!(data.lastName||"").trim()) errors.lastName="Last name is required.";
-        if(!/^[\d\s()+-]{7,}$/.test((data.phone||"").trim())) errors.phone="Enter a valid phone number.";
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((data.email||"").trim())) errors.email="Enter a valid email address.";
+        /* at least one contact method: phone or email (same rule as the page forms) */
+        var qPhone=(data.phone||"").trim(), qEmail=(data.email||"").trim();
+        if(!qPhone && !qEmail){
+          errors.phone="Add a phone number or an email address so we can reach you.";
+        } else {
+          if(qPhone && !/^[\d\s()+-]{7,}$/.test(qPhone)) errors.phone="Enter a valid phone number.";
+          if(qEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(qEmail)) errors.email="Enter a valid email address.";
+        }
       }
       return Object.keys(errors).length===0;
     }
@@ -577,12 +589,16 @@
       if(next){ next.disabled=true; next.textContent="Sending..."; }
       var fd=new FormData();
       fd.append("access_key",WEB3FORMS_ACCESS_KEY);
+      /* honeypot: the hidden botcheck checkbox is never ticked by people; if it is, Web3Forms rejects the lead */
+      var hp=document.querySelector("#qmBackdrop input[name=botcheck]");
+      if(hp&&hp.checked) fd.append("botcheck","on");
+      window.__ybFormBusy=true;
       fd.append("subject","New estimate request from youngbuckslandscaping.com (quote modal)");
       fd.append("from_name","Young Bucks Website");
       fd.append("zip_code",data.zip);
-      fd.append("service",data.service);
-      fd.append("timeline",data.timeline);
-      fd.append("details",data.details);
+      fd.append("service",qmLabel(QM_SERVICES,data.service));
+      fd.append("timeline",qmLabel(QM_TIMELINES,data.timeline));
+      fd.append("message",data.details);
       fd.append("first_name",data.firstName);
       fd.append("last_name",data.lastName);
       fd.append("phone",data.phone);
@@ -591,6 +607,7 @@
         .then(function(r){ return r.json(); })
         .then(function(res){
           submitting=false;
+          window.__ybFormBusy=false;
           if(res && res.success){
             submitted=true;
             track("generate_lead",{page_path:location.pathname,service:data.service});
@@ -603,6 +620,7 @@
         })
         .catch(function(){
           submitting=false;
+          window.__ybFormBusy=false;
           submitError='Unable to send. Please check your connection and try again, or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
           renderStep();
         });
@@ -685,13 +703,48 @@
     var scheduleBtn=document.getElementById("promoSchedule");
     var shown=false;
 
+    /* once per visit: a session flag stops a second popup on later pages */
+    var SHOWN_KEY="youngBucks.promoPopupShownThisVisit";
+    function shownThisVisit(){ try{ return sessionStorage.getItem(SHOWN_KEY)==="1"; }catch(e){ return false; } }
+    function markShownThisVisit(){ try{ sessionStorage.setItem(SHOWN_KEY,"1"); }catch(e){} }
+    /* phones: no automatic popup, so testimonials and content stay clear */
+    var isPhone=window.matchMedia&&window.matchMedia("(max-width: 640px)").matches;
+    function videoPlaying(){
+      return [].some.call(document.querySelectorAll("video"),function(v){ return !v.paused&&!v.ended; });
+    }
     function show(){
-      if(shown||promoDismissed()||window.__qmIsOpen) return;
+      /* never over the quote modal, an active form submission, or a phone screen */
+      if(shown||promoDismissed()||shownThisVisit()||isPhone) return;
+      /* busy (form sending or quote modal open): try again shortly rather than giving up for this visit */
+      if(window.__qmIsOpen||window.__ybFormBusy){ setTimeout(show,3000); return; }
+      if(videoPlaying()){
+        /* wait for playback to stop, then try again */
+        [].forEach.call(document.querySelectorAll("video"),function(v){
+          v.addEventListener("pause",function(){ setTimeout(show,400); },{once:true});
+          v.addEventListener("ended",function(){ setTimeout(show,400); },{once:true});
+        });
+        return;
+      }
       shown=true;
+      markShownThisVisit();
       backdrop.classList.add("open");
       backdrop.setAttribute("aria-hidden","false");
       trackClarity("promo_shown");
     }
+    /* opening the quote modal closes the popup without saving a dismissal */
+    document.addEventListener("click",function(e){
+      if(e.target&&e.target.closest&&e.target.closest("[data-open-quote]")&&backdrop.classList.contains("open")){
+        backdrop.classList.remove("open");
+        backdrop.setAttribute("aria-hidden","true");
+      }
+    },true);
+    /* if a video starts while the popup is open, close it without persisting a dismissal */
+    document.addEventListener("play",function(e){
+      if(e.target&&e.target.tagName==="VIDEO"&&backdrop.classList.contains("open")){
+        backdrop.classList.remove("open");
+        backdrop.setAttribute("aria-hidden","true");
+      }
+    },true);
     function dismiss(){
       backdrop.classList.remove("open");
       backdrop.setAttribute("aria-hidden","true");
@@ -776,7 +829,18 @@
     form.addEventListener("submit",function(e){
       e.preventDefault();
       if(submittingForm) return;
+      /* at least one contact method: phone or email */
+      var phoneEl=form.querySelector("[name=phone]"), emailEl=form.querySelector("[name=email]");
+      var hasPhone=!!(phoneEl&&phoneEl.value.trim()), hasEmail=!!(emailEl&&emailEl.value.trim());
+      if(!hasPhone&&!hasEmail){
+        errEl.textContent="Please add a phone number or an email address so we can reach you.";
+        errEl.hidden=false;
+        if(phoneEl){ phoneEl.setAttribute("aria-invalid","true"); phoneEl.focus(); }
+        return;
+      }
+      if(phoneEl) phoneEl.removeAttribute("aria-invalid");
       submittingForm=true;
+      window.__ybFormBusy=true;
       errEl.hidden=true;
       if(btn){ btn.disabled=true; btn.textContent="Sending..."; }
       var fd=new FormData(form);
@@ -789,6 +853,7 @@
       .then(function(r){ return r.json(); })
       .then(function(data){
         submittingForm=false;
+        window.__ybFormBusy=false;
         if(data && data.success){
           form.style.display="none";
           if(success) success.hidden=false;
@@ -802,6 +867,7 @@
       })
       .catch(function(){
         submittingForm=false;
+        window.__ybFormBusy=false;
         if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
         errEl.innerHTML='Unable to send. Please check your connection and try again, or <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red-dark);font-weight:700;text-decoration:underline">Call Now</a>.';
         errEl.hidden=false;

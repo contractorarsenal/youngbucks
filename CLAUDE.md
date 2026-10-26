@@ -128,4 +128,34 @@ All lead forms POST to `https://api.web3forms.com/submit`.
 6. **Seasonal sprinkler promotion** on `index.html` needs review for current accuracy and wording.
 7. **Web3Forms key exposure.** The access key is in client-side JS in a public repository, and its value appeared in a tool output during onboarding. Recommend reviewing domain restrictions in the Web3Forms dashboard and considering rotation. Rotation requires updating the constant in `js/main.js`.
 8. **Internal documentation is public.** `STRATEGY.md` is in a public repository. Consider making the repository private or moving the file out.
-9. **Homepage and contact form handler** has not been reviewed in detail.
+9. **Homepage and contact form handler** has not been reviewed in detail. (Reviewed 2026-10-26: submit, success, and error paths verified with a mocked fetch. See section 10.)
+
+## 10. Permanent Form and Design Standards
+
+These rules apply to all current and future website work.
+
+### Web3Forms (mandatory for every contact, estimate, quote, or lead form)
+- Every lead form posts through Web3Forms. Reuse the existing configuration in `js/main.js` (the `WEB3FORMS_ACCESS_KEY` and `WEB3FORMS_ENDPOINT` constants). Never print, log, or copy the access key value into code comments, reports, or new documentation.
+- Do not replace Web3Forms with Formspree, a mailto link, or another provider. Do not add mock forms or submit buttons that do nothing.
+- Keep the page-form pattern: a `.w3f-form` with a hidden `botcheck` honeypot, the AJAX submit handler in `main.js`, a `.form-success` element directly after the form, and a `.field-submit-error` message for failures. Keep native `required` validation.
+- Use the shared field names so every lead email reads the same: `first_name`, `last_name`, `email`, `phone`, `service` (readable label, e.g. "Tree Removal"), `timeline` (readable label), `address` (page forms) or `zip_code` (quote modal), `message` (details), `subject`, `from_name`.
+- Test submissions only with a mocked `fetch` in a scratch copy, so nothing reaches Web3Forms. Use obviously fake data (`TEST`, `test-only@example.invalid`). Never send real test leads without explicit authorization.
+- Contact method: phone or email, at least one. Email is optional. The rule is enforced in the page-form submit handler in `main.js`, with a visible hint and an accessible error message.
+- Every lead form carries the `botcheck` honeypot. The quote modal has one too, and its value is sent with the lead.
+- The sprinkler popup never opens over the quote modal, an active form submission, or a phone screen. A blocked attempt retries rather than giving up for the visit.
+- Before-and-after photos use neutral captions and alt text that describe only what is visible. Do not add a location, project history, or result to them.
+
+### Media and cards
+- Standards live in `css/style.css` under "MEDIA STANDARDS": `--media-photo: 4/3`, `--media-video: 16/9`, `.media-frame` (cover crop), `.media-frame--video`, `.media-frame--logo` (contain, for logos only), and `.card-grid` (equal-width columns).
+- Service and project photos are 4:3. Customer videos and blog feature cards are 16:9. Before-and-after pairs use identical dimensions and crop.
+- Use `object-fit: cover` for photographs and `contain` only for logos. Never stretch an image.
+- Do not upscale a low-resolution photo to fill a card. If the original is too small, add it to the replacement list in `Youngbucks-drafts/IMAGE_AUDIT.md` instead.
+
+### Responsive quality control
+- Before reporting a page change, check every affected page at 320, 375, 768, 1024, 1440, and 1920 px. Confirm no horizontal overflow, equal card sizes within a row, no stretched media, and working forms and buttons.
+- Expected testimonial layout: three columns at 1100 px and above, two columns from 901 to 1100 px, and one column at 900 px and below.
+
+### Media, previews, and publication
+- Never commit videos, posters, transcripts, or other customer media to Git. Keep them outside the repository until publication is authorized.
+- The private preview is built in a separate directory (`Youngbucks-preview`) from the repo, with the testimonial section enabled there only. The repo's `index.html` keeps the section commented out as UNPUBLISHED.
+- Do not describe a customer video as tree work, trimming, equipment, or a crew unless that footage shows it. Do not call YB-2 a retaining-wall project until project records and owner permission confirm it.
