@@ -156,6 +156,6 @@ These rules apply to all current and future website work.
 - Expected testimonial layout: three columns at 1100 px and above, two columns from 901 to 1100 px, and one column at 900 px and below.
 
 ### Media, previews, and publication
-- Never commit videos, posters, transcripts, or other customer media to Git. Keep them outside the repository until publication is authorized.
-- The private preview is built in a separate directory (`Youngbucks-preview`) from the repo, with the testimonial section enabled there only. The repo's `index.html` keeps the section commented out as UNPUBLISHED.
-- Do not describe a customer video as tree work, trimming, equipment, or a crew unless that footage shows it. Do not call YB-2 a retaining-wall project until project records and owner permission confirm it.
+- Publish only media the owner has approved. Approved testimonial videos live in `assets/videos/` as 720p H.264 MP4 files, each under 25 MiB (the Cloudflare Pages per-file limit), with posters in `assets/videos/posters/`. Transcripts, source recordings, and preview builds stay outside the repository.
+- The homepage testimonial section is live (owner permission confirmed 2026-10-26 for all three recordings). Its descriptions come from the transcripts and name no customers and no tree work.
+- Do not describe a customer video as tree work, trimming, equipment, or a crew unless that footage shows it. Do not call YB-2 a retaining-wall project until project records confirm it. Do not publish customer names or the transcript claims about response time, booking, or pricing.
