@@ -276,6 +276,124 @@
     }
   }
 
+  /* --- our work: category filters + accessible lightbox (native dialog) --- */
+  var pfGrid=document.getElementById("pfGrid");
+  if(pfGrid){
+    var pfFilters=Array.prototype.slice.call(document.querySelectorAll(".pf-filter"));
+    var pfItems=Array.prototype.slice.call(document.querySelectorAll("[data-cat]"));
+    var pfCount=document.getElementById("pfCount");
+    var pfBox=document.getElementById("pfLightbox");
+    var pfImg=document.getElementById("pfLbImg");
+    var pfCap=document.getElementById("pfLbCaption");
+    var pfNum=document.getElementById("pfLbCount");
+    var pfActive=[];
+    var pfCurrent=0;
+    function pfCards(){ return pfItems.filter(function(el){ return el.classList.contains("pf-card") && !el.hidden; }); }
+    function pfApply(cat){
+      pfItems.forEach(function(el){ el.hidden=!(cat==="all"||el.getAttribute("data-cat")===cat); });
+      pfFilters.forEach(function(b){ b.setAttribute("aria-pressed",String(b.getAttribute("data-filter")===cat)); });
+      if(cat==="before-after"){
+        pfCount.textContent="Showing the before and after comparison";
+      } else {
+        var n=pfCards().length;
+        pfCount.textContent="Showing "+n+(n===1?" photo":" photos");
+      }
+    }
+    function pfShow(){
+      var card=pfActive[pfCurrent];
+      var img=card.querySelector("img");
+      pfImg.src=img.getAttribute("src");
+      pfImg.alt=img.alt;
+      pfCap.textContent=card.querySelector(".pf-caption p").textContent;
+      pfNum.textContent=(pfCurrent+1)+" / "+pfActive.length;
+    }
+    function pfStep(delta){
+      pfCurrent=(pfCurrent+delta+pfActive.length)%pfActive.length;
+      pfShow();
+    }
+    pfFilters.forEach(function(b){
+      b.addEventListener("click",function(){ pfApply(b.getAttribute("data-filter")); });
+    });
+    pfGrid.querySelectorAll(".pf-open").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        pfActive=pfCards();
+        pfCurrent=pfActive.indexOf(btn.closest(".pf-card"));
+        pfShow();
+        if(pfBox.showModal) pfBox.showModal(); else pfBox.setAttribute("open","");
+        track("project_view",{page_path:location.pathname,index:pfCurrent});
+      });
+    });
+    if(pfBox){
+      var pfPrev=pfBox.querySelector(".pf-lb-prev");
+      var pfNext=pfBox.querySelector(".pf-lb-next");
+      var pfClose=pfBox.querySelector(".pf-lb-close");
+      if(pfPrev) pfPrev.addEventListener("click",function(){ pfStep(-1); });
+      if(pfNext) pfNext.addEventListener("click",function(){ pfStep(1); });
+      if(pfClose) pfClose.addEventListener("click",function(){ pfBox.close(); });
+      pfBox.addEventListener("click",function(e){ if(e.target===pfBox) pfBox.close(); });
+      pfBox.addEventListener("keydown",function(e){
+        if(e.key==="ArrowLeft"){ e.preventDefault(); pfStep(-1); }
+        if(e.key==="ArrowRight"){ e.preventDefault(); pfStep(1); }
+      });
+    }
+    pfApply("all");
+  }
+
+  /* --- blog index: renders window.YB_BLOG_POSTS from js/blog-posts.js (textContent only) --- */
+  var blogGrid=document.getElementById("blogGrid");
+  if(blogGrid){
+    var blogPosts=window.YB_BLOG_POSTS||[];
+    var blogEmpty=document.getElementById("blogEmpty");
+    var blogFilters=document.getElementById("blogFilters");
+    var blogCats=[];
+    blogPosts.forEach(function(p){ if(blogCats.indexOf(p.category)<0) blogCats.push(p.category); });
+    function blogRender(cat){
+      blogGrid.textContent="";
+      blogPosts.forEach(function(p){
+        if(cat!=="all" && p.category!==cat) return;
+        var art=document.createElement("article");
+        art.className="blog-card";
+        var a=document.createElement("a");
+        a.className="blog-card-link";
+        a.href=p.href;
+        var frame=document.createElement("span");
+        frame.className="media-frame";
+        var img=document.createElement("img");
+        img.src=p.image;
+        img.alt=p.imageAlt||"";
+        img.loading="lazy";
+        frame.appendChild(img);
+        var cat1=document.createElement("span"); cat1.className="blog-cat"; cat1.textContent=p.category;
+        var h=document.createElement("h2"); h.className="blog-card-title"; h.textContent=p.title;
+        var ex=document.createElement("p"); ex.className="blog-card-excerpt"; ex.textContent=p.excerpt;
+        var dt=document.createElement("time"); dt.className="blog-card-date"; dt.setAttribute("datetime",p.date); dt.textContent=p.dateLabel;
+        a.appendChild(frame); a.appendChild(cat1); a.appendChild(h); a.appendChild(ex); a.appendChild(dt);
+        art.appendChild(a);
+        blogGrid.appendChild(art);
+      });
+    }
+    if(!blogPosts.length){
+      if(blogEmpty) blogEmpty.hidden=false;
+      if(blogFilters) blogFilters.hidden=true;
+    } else {
+      if(blogEmpty) blogEmpty.hidden=true;
+      if(blogFilters){
+        ["all"].concat(blogCats).forEach(function(c){
+          var b=document.createElement("button");
+          b.type="button"; b.className="pf-filter"; b.setAttribute("data-filter",c);
+          b.textContent=c==="all"?"All Articles":c;
+          b.setAttribute("aria-pressed",String(c==="all"));
+          b.addEventListener("click",function(){
+            blogFilters.querySelectorAll(".pf-filter").forEach(function(x){ x.setAttribute("aria-pressed",String(x===b)); });
+            blogRender(c);
+          });
+          blogFilters.appendChild(b);
+        });
+      }
+      blogRender("all");
+    }
+  }
+
   /* --- before/after slider + tabs (accessible) --- */
   function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
   var baPairs=Array.prototype.slice.call(document.querySelectorAll(".ba"));
