@@ -873,3 +873,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .blog-empty{max-width:var(--maxw-narrow);margin:0 auto;text-align:center}
 .blog-empty p{font-family:var(--font-serif);font-size:clamp(1rem,1.3vw,1.15rem);line-height:1.6;color:var(--muted)}
 .blog-filters[hidden]{display:none}
+
+/* ============ 404 PAGE ============ */
+.not-found{padding-block:clamp(72px,12vw,140px)}
+.not-found .wrap-narrow{text-align:center}
+.not-found-title{margin:16px 0 18px}
+.not-found .lead{max-width:52ch;margin-inline:auto}
+.not-found-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+.not-found-cta{margin-top:56px;padding-top:32px;border-top:1px solid var(--line)}
+.not-found-cta p{font-family:var(--font-serif);font-size:clamp(1rem,1.3vw,1.15rem);color:var(--muted);margin:0 0 20px}
