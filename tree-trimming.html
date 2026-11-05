@@ -44,10 +44,7 @@
    "description": "Tree trimming and pruning in Wenatchee, WA: crown reduction, dead wood removal, and clearance pruning. Free on-site estimates. Call (509) 470-5684.",
    "url": "https://www.youngbuckslandscapingllc.com/tree-trimming",
    "provider": {
-    "@type": "HomeAndConstructionBusiness",
-    "name": "Young Bucks Landscaping & Tree Service",
-    "telephone": "+15094705684",
-    "url": "https://www.youngbuckslandscapingllc.com/"
+    "@id": "https://www.youngbuckslandscapingllc.com/#business"
    },
    "areaServed": [
     "Wenatchee",
@@ -56,7 +53,11 @@
     "Leavenworth",
     "Rock Island",
     "Malaga",
-    "Monitor"
+    "Monitor",
+    "Ephrata",
+    "Chelan",
+    "Manson",
+    "Moses Lake"
    ]
   },
   {
@@ -111,6 +112,32 @@
 .emergency-bar{background:var(--red);color:#fff;padding:16px var(--pad);text-align:center;font-weight:700;font-size:15px;letter-spacing:.02em}
 .emergency-bar a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 </style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Home",
+   "item": "https://www.youngbuckslandscapingllc.com/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Services",
+   "item": "https://www.youngbuckslandscapingllc.com/services"
+  },
+  {
+   "@type": "ListItem",
+   "position": 3,
+   "name": "Tree Trimming",
+   "item": "https://www.youngbuckslandscapingllc.com/tree-trimming"
+  }
+ ]
+}
+</script>
 </head>
 <body>
 
@@ -154,6 +181,12 @@
 </div>
 
 <!-- TEMPORARY: this hero image is reused from the tree-removal page and shows a removal job. Replace it with a verified trimming photo before publication. -->
+<nav class="breadcrumb" aria-label="Breadcrumb"><ol>
+  <li><a href="/">Home</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li aria-current="page">Tree Trimming</li>
+</ol></nav>
+
 <header class="page-hero tall">
   <div class="page-hero-media">
     <img src="https://github.com/user-attachments/assets/fc83ea66-9bbd-4452-a69d-510ce9ae4a52" alt="Tree service work by Young Bucks Landscaping in the Wenatchee Valley" fetchpriority="high">
