@@ -882,3 +882,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .not-found-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
 .not-found-cta{margin-top:56px;padding-top:32px;border-top:1px solid var(--line)}
 .not-found-cta p{font-family:var(--font-serif);font-size:clamp(1rem,1.3vw,1.15rem);color:var(--muted);margin:0 0 20px}
+
+/* ============ BREADCRUMBS (service-area pages) ============ */
+.breadcrumb{max-width:var(--maxw);margin:0 auto;padding:18px var(--pad) 0;font-size:13px;color:var(--muted)}
+.breadcrumb ol{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0}
+.breadcrumb li+li::before{content:"/";margin-right:8px;color:var(--line-2)}
+.breadcrumb a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.breadcrumb a:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+
+/* ============ SERVICE AREA CARDS (hub) ============ */
+.value-row.area-grid{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1100px){.value-row.area-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.value-row.area-grid{grid-template-columns:1fr}}
