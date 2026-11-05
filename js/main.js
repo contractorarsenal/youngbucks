@@ -57,6 +57,26 @@
   function track(name,params){
     if(typeof window.gtag==="function"){ window.gtag("event",name,params||{}); }
   }
+  /* --- lead attribution: approved, non-personal parameters only (no names, contacts, messages, or addresses) --- */
+  var LEAD_SERVICE_CATEGORY={
+    "sprinkler-blowout":"sprinkler-winterization","sprinkler blowout / winterization":"sprinkler-winterization",
+    "tree-trimming":"tree-trimming","tree trimming":"tree-trimming",
+    "tree-removal":"tree-removal","tree removal":"tree-removal",
+    "irrigation":"irrigation","irrigation repair":"irrigation",
+    "landscaping":"landscaping",
+    "retaining-wall":"retaining-walls","retaining wall":"retaining-walls",
+    "hardscaping":"hardscapes-pavers",
+    "not-sure":"not-sure","other / not sure":"not-sure"
+  };
+  var LEAD_AREA_PAGES=["ephrata","chelan","manson","moses-lake"];
+  function leadParams(formType,serviceValue){
+    var p={form_type:formType,source_page:location.pathname};
+    var cat=LEAD_SERVICE_CATEGORY[String(serviceValue||"").trim().toLowerCase()];
+    if(cat) p.service_category=cat;
+    var m=location.pathname.match(/^\/service-areas\/([a-z-]+?)(?:\.html)?\/?$/);
+    if(m && LEAD_AREA_PAGES.indexOf(m[1])>=0) p.service_area_page=m[1];
+    return p;
+  }
   function trackClarity(name){
     if(typeof window.clarity==="function"){ window.clarity("event",name); }
   }
@@ -699,6 +719,7 @@
     }
 
     var submitting=false;
+    var leadSent=false;
     function submitQuote(){
       if(submitting) return;
       submitting=true;
@@ -728,7 +749,10 @@
           window.__ybFormBusy=false;
           if(res && res.success){
             submitted=true;
-            track("generate_lead",{page_path:location.pathname,service:data.service});
+            if(!leadSent){
+              leadSent=true;
+              track("generate_lead",Object.assign({page_path:location.pathname,service:data.service},leadParams("quote_modal",data.service)));
+            }
             trackClarity("quote_submit");
             renderStep();
           } else {
@@ -928,6 +952,7 @@
   contactForms.forEach(function(form){
     var started=false;
     var submittingForm=false;
+    var leadSent=false;
     var btn=form.querySelector("[type=submit]");
     var btnDefaultLabel=btn?btn.innerHTML:"";
     var success=form.nextElementSibling;
@@ -975,7 +1000,11 @@
         if(data && data.success){
           form.style.display="none";
           if(success) success.hidden=false;
-          track("generate_lead",{page_path:location.pathname});
+          if(!leadSent){
+            leadSent=true;
+            var svcEl=form.querySelector("[name=service]");
+            track("generate_lead",Object.assign({page_path:location.pathname},leadParams("contact",svcEl?svcEl.value:"")));
+          }
           trackClarity("quote_submit");
         } else {
           if(btn){ btn.disabled=false; btn.innerHTML=btnDefaultLabel; }
