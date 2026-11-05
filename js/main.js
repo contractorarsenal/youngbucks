@@ -602,7 +602,7 @@
         if(submitted){
           html+='<div class="qm-success"><div class="qm-success-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>'+
             '<h3>Request Received.</h3>'+
-            '<p>Thanks, '+(data.firstName||"there")+'. Young Bucks received your project request and will follow up within one business day. For an active tree emergency, <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red);font-weight:700">Call Now</a>.</p>'+
+            '<p>Thanks, '+(data.firstName||"there")+'. Young Bucks received your project request and will follow up to schedule your estimate. For an active tree emergency, <a href="tel:+15094705684" aria-label="Call Young Bucks Landscaping" style="color:var(--red);font-weight:700">Call Now</a>.</p>'+
             '<button type="button" class="btn btn-ink" id="qmDone">Close</button></div>';
         } else {
           html+='<h3>Tell Us How To Reach You</h3><span class="qm-sub">We\'ll follow up to confirm your estimate.</span>';
