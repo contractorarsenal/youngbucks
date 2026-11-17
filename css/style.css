@@ -900,3 +900,33 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .service-note{font-family:var(--font-serif);font-size:clamp(1rem,1.3vw,1.1rem);line-height:1.7;color:var(--muted);max-width:62ch;margin:0 auto;text-align:center}
 .service-note a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 .service-note a:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+
+/* ============ LAYOUT ALIGNMENT (2026-11) ============ */
+/* Narrow text sections: eyebrow stacked over a centered heading */
+.wrap-narrow>.section-head{flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:0}
+.wrap-narrow>.section-head .eyebrow{justify-content:center}
+.wrap-narrow>.section-head .eyebrow::after{content:"";width:24px;height:2px;background:currentColor;display:inline-block}
+/* Body copy and lists under those headings: centered block, left-aligned text */
+.wrap-narrow>.section-head~p{max-width:62ch;margin-inline:auto;text-align:left;line-height:1.7}
+.wrap-narrow>.section-head~p+p{margin-top:14px}
+.wrap-narrow>.section-head~ul{max-width:62ch;margin-inline:auto;text-align:left}
+.wrap-narrow>.section-head~p.lead-center{text-align:center}
+.section-flush-top{padding-top:0}
+/* Photo-less heroes: one centered group */
+.page-hero--center{align-items:center;min-height:clamp(360px,52vh,540px)}
+.page-hero--center .page-hero-inner{text-align:center;padding-block:clamp(64px,9vw,104px)}
+.page-hero--center .page-hero-inner .eyebrow{justify-content:center}
+.page-hero--center .page-hero-inner .eyebrow::after{content:"";width:24px;height:2px;background:currentColor;display:inline-block}
+.page-hero--center .page-hero-inner p{margin-inline:auto}
+.page-hero--center .page-hero-cta{justify-content:center}
+/* Contact and quote button group under body copy */
+.contact-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+@media (max-width:560px){.contact-actions .btn{flex:1 1 100%}}
+.area-also{margin-top:28px;text-align:center;color:var(--muted)}
+/* Card grids: equal columns, no stray inset on the first card of each row */
+.value-row.area-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.value-row.area-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.value-row.area-grid{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:701px){.value-row:not(.area-grid) .value-item:nth-child(3n+1){padding-left:0;border-left:none}}
+@media (min-width:641px) and (max-width:1100px){.value-row.area-grid .value-item:nth-child(odd){padding-left:0;border-left:none}}
+@media (max-width:640px){.value-row.area-grid .value-item,.value-row.area-grid .value-item:not(:first-child){padding-left:0;border-left:none}}
