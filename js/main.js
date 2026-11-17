@@ -64,11 +64,14 @@
     "tree-removal":"tree-removal","tree removal":"tree-removal",
     "irrigation":"irrigation","irrigation repair":"irrigation",
     "landscaping":"landscaping",
+    "lawn-maintenance":"lawn-maintenance","lawn maintenance":"lawn-maintenance",
     "retaining-wall":"retaining-walls","retaining wall":"retaining-walls",
     "hardscaping":"hardscapes-pavers",
+    "snow-removal":"snow-removal","snow removal":"snow-removal",
+    "commercial":"commercial-property-maintenance","commercial property maintenance":"commercial-property-maintenance",
     "not-sure":"not-sure","other / not sure":"not-sure"
   };
-  var LEAD_AREA_PAGES=["ephrata","chelan","manson","moses-lake"];
+  var LEAD_AREA_PAGES=["wenatchee","east-wenatchee","cashmere","leavenworth","ephrata","chelan","manson","moses-lake"];
   function leadParams(formType,serviceValue){
     var p={form_type:formType,source_page:location.pathname};
     var cat=LEAD_SERVICE_CATEGORY[String(serviceValue||"").trim().toLowerCase()];
@@ -531,8 +534,11 @@
     {id:"tree-removal",label:"Tree Removal"},
     {id:"irrigation",label:"Irrigation"},
     {id:"landscaping",label:"Landscaping"},
+    {id:"lawn-maintenance",label:"Lawn Maintenance"},
     {id:"retaining-wall",label:"Retaining Wall"},
     {id:"hardscaping",label:"Hardscaping"},
+    {id:"snow-removal",label:"Snow Removal"},
+    {id:"commercial",label:"Commercial Maintenance"},
     {id:"not-sure",label:"Not Sure Yet"}
   ];
   var QM_TIMELINES=[
