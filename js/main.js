@@ -1067,7 +1067,9 @@
     });
     bar.querySelector(".mcb-quote").addEventListener("click",function(e){
       e.preventDefault();
-      if(window.YB_openQuoteModal) window.YB_openQuoteModal();
+      /* carry the page's service (set on the floating/menu quote button) into the form */
+      var pageBtn=document.querySelector('#fab [data-open-quote][data-service]')||document.querySelector('[data-open-quote][data-service][data-placement="mobile_menu"]');
+      if(window.YB_openQuoteModal) window.YB_openQuoteModal(pageBtn?pageBtn.getAttribute("data-service"):"");
     });
   }
 
